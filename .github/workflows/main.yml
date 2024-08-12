@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-dev
-        working-directory: .github/workflows 
+        working-directory: first-app/demo-app  # Adjust if necessary
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
