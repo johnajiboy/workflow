@@ -20,6 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-dev
+        working-directory: first-app/demo-app
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
