@@ -21,14 +21,14 @@ jobs:
           npm run production
 
       - name: Deploy to EC2 using SSH
-        uses: appleboy/ssh-action@v1.1.0
+        uses: appleboy/ssh-action@v0.1.4  # Update to a valid version
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd  /var/www/html/Thirdapp/Thirdapp
+            cd /var/www/html/Thirdapp/  # Adjusted for your EC2 path
             git pull origin main
             php artisan migrate --force
             php artisan config:cache
