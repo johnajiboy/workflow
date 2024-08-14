@@ -1,33 +1,37 @@
-name: Laravel Deployment
+name: Deploy Laravel to EC2
 
 on:
   push:
     branches:
-      - main
+      - main  # Change to your branch if needed
 
 jobs:
   deploy:
+    name: Deploy to EC2
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - name: Install Dependencies
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          npm install
+          npm run production
+
+      - name: Deploy to EC2 using SSH
+        uses: appleboy/ssh-action@v1.1.0
         with:
-          php-version: '8.0'
-
-      - name: Install dependencies
-        run: composer install --no-dev
-        working-directory: github/workflows  # Adjust if necessary
-
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Deploy to AWS EC2
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_INSTANCE_IP }} "cd /var/www/html && git pull && composer install --no-dev && php artisan migrate --force && php artisan optimize"
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd  /var/www/html/Thirdapp/Thirdapp
+            git pull origin main
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            sudo systemctl restart nginx
