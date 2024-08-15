@@ -28,7 +28,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd /var/www/html/Thirdapp/  # Adjusted for your EC2 path
+            cd /var/www/html/Thirdapp/Thirdapp  # Adjusted for your EC2 path
             git pull origin main
             php artisan migrate --force
             php artisan config:cache
